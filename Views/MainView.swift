@@ -52,95 +52,199 @@ struct MainView: View {
         ZStack {
             Theme.background
 
-            HStack(spacing: 0) {
-                // Left Pagination Panel
-                VStack(spacing: 12) {
-                    Spacer()
-                    // Display dots representing a cycle
+            // Main Content
+            VStack(spacing: 15) {
+                // Header/Phase
+                Text(phaseText)
+                    .font(.system(size: 20, weight: .medium, design: .rounded))
+                    .foregroundColor(Theme.secondaryAccent)
+                    .padding(.top, 25)
+
+                // Progress dots representing a cycle
+                HStack(spacing: 8) {
                     ForEach(0..<settings.targetPomos, id: \.self) { index in
                         Circle()
                             .fill(index < (timerManager.completedPomos % settings.targetPomos) ? Theme.accent : Theme.accent.opacity(0.3))
-                            .frame(width: 12, height: 12)
+                            .frame(width: 10, height: 10)
                     }
-                    Spacer()
                 }
-                .frame(width: 50)
-                .background(Theme.background.brightness(-0.02))
+                .padding(.top, 4)
 
-                // Main Content
-                VStack(spacing: 20) {
-                    // Header/Phase
-                    Text(phaseText)
-                        .font(.system(size: 18, weight: .medium, design: .rounded))
-                        .foregroundColor(Theme.secondaryAccent)
-                        .padding(.top, 30)
+                Spacer()
 
-                    Spacer()
-
-                    // Timer Display Row
-                    HStack(spacing: 20) {
-                        Button(action: {
-                            timerManager.resetPhase()
-                        }) {
-                            Image(systemName: "chevron.left")
-                                .font(.system(size: 24, weight: .bold))
-                                .foregroundColor(Theme.secondaryAccent.opacity(0.8))
-                        }
-                        .buttonStyle(PlainButtonStyle())
-
-                        Text(timerManager.timeString)
-                            .font(.system(size: 80, weight: .bold, design: .monospaced))
-                            .foregroundColor(Theme.timerText)
-                            .minimumScaleFactor(0.5)
-
-                        Button(action: {
-                            timerManager.skip()
-                        }) {
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 24, weight: .bold))
-                                .foregroundColor(Theme.secondaryAccent.opacity(0.8))
-                        }
-                        .buttonStyle(PlainButtonStyle())
-                    }
-                    .padding(.horizontal)
-
-                    Spacer()
-
-                    // Controls
+                // Timer Display Row
+                HStack(spacing: 15) {
                     Button(action: {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-                            timerManager.togglePause()
-                        }
+                        timerManager.resetPhase()
                     }) {
-                        ZStack {
-                            Circle()
-                                .fill(Theme.accent)
-                                .frame(width: 60, height: 60)
-                                .shadow(radius: 5)
-
-                            Image(systemName: timerManager.isRunning ? "pause.fill" : "play.fill")
-                                .font(.system(size: 26))
-                                .foregroundColor(.white)
-                                .id(timerManager.isRunning)
-                                .transition(.scale.combined(with: .opacity))
-                        }
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 26, weight: .bold))
+                            .foregroundColor(Theme.secondaryAccent.opacity(0.8))
                     }
                     .buttonStyle(PlainButtonStyle())
-                    .padding(.bottom, 30)
+
+                    Text(timerManager.timeString)
+                        .font(.system(size: 90, weight: .bold, design: .monospaced))
+                        .foregroundColor(Theme.timerText)
+                        .minimumScaleFactor(0.5)
+
+                    Button(action: {
+                        timerManager.skip()
+                    }) {
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 26, weight: .bold))
+                            .foregroundColor(Theme.secondaryAccent.opacity(0.8))
+                    }
+                    .buttonStyle(PlainButtonStyle())
                 }
-                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 20)
+
+                Spacer()
+
+                // Controls
+                Button(action: {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                        timerManager.togglePause()
+                    }
+                }) {
+                    ZStack {
+                        Circle()
+                            .fill(Theme.accent)
+                            .frame(width: 65, height: 65)
+                            .shadow(radius: 5)
+
+                        Image(systemName: timerManager.isRunning ? "pause.fill" : "play.fill")
+                            .font(.system(size: 28))
+                            .foregroundColor(.white)
+                            .id(timerManager.isRunning)
+                            .transition(.scale.combined(with: .opacity))
+                    }
+                }
+                .buttonStyle(PlainButtonStyle())
+                .padding(.bottom, 25)
             }
+            .frame(maxWidth: .infinity)
 
             // Custom window controls and settings - always visible overlay
             VStack {
                 HStack {
                     customWindowControls
                     Spacer()
-                    settingsButton
+                    Menu {
+                        Menu("Focus Length") {
+                            Button(action: { updateFocusDuration(15 * 60) }) {
+                                HStack {
+                                    Text("15 mins")
+                                    if settings.focusDuration == 15 * 60 {
+                                        Spacer()
+                                        Image(systemName: "checkmark")
+                                    }
+                                }
+                            }
+                            Button(action: { updateFocusDuration(20 * 60) }) {
+                                HStack {
+                                    Text("20 mins")
+                                    if settings.focusDuration == 20 * 60 {
+                                        Spacer()
+                                        Image(systemName: "checkmark")
+                                    }
+                                }
+                            }
+                            Button(action: { updateFocusDuration(25 * 60) }) {
+                                HStack {
+                                    Text("25 mins")
+                                    if settings.focusDuration == 25 * 60 {
+                                        Spacer()
+                                        Image(systemName: "checkmark")
+                                    }
+                                }
+                            }
+                            Button(action: { updateFocusDuration(30 * 60) }) {
+                                HStack {
+                                    Text("30 mins")
+                                    if settings.focusDuration == 30 * 60 {
+                                        Spacer()
+                                        Image(systemName: "checkmark")
+                                    }
+                                }
+                            }
+                            Button(action: { updateFocusDuration(45 * 60) }) {
+                                HStack {
+                                    Text("45 mins")
+                                    if settings.focusDuration == 45 * 60 {
+                                        Spacer()
+                                        Image(systemName: "checkmark")
+                                    }
+                                }
+                            }
+                            Button(action: { updateFocusDuration(60 * 60) }) {
+                                HStack {
+                                    Text("60 mins")
+                                    if settings.focusDuration == 60 * 60 {
+                                        Spacer()
+                                        Image(systemName: "checkmark")
+                                    }
+                                }
+                            }
+                        }
+                        Menu("Break Length") {
+                            Button(action: { updateBreakDuration(5 * 60) }) {
+                                HStack {
+                                    Text("5 mins")
+                                    if settings.breakDuration == 5 * 60 {
+                                        Spacer()
+                                        Image(systemName: "checkmark")
+                                    }
+                                }
+                            }
+                            Button(action: { updateBreakDuration(10 * 60) }) {
+                                HStack {
+                                    Text("10 mins")
+                                    if settings.breakDuration == 10 * 60 {
+                                        Spacer()
+                                        Image(systemName: "checkmark")
+                                    }
+                                }
+                            }
+                            Button(action: { updateBreakDuration(15 * 60) }) {
+                                HStack {
+                                    Text("15 mins")
+                                    if settings.breakDuration == 15 * 60 {
+                                        Spacer()
+                                        Image(systemName: "checkmark")
+                                    }
+                                }
+                            }
+                        }
+                        Menu("Rounds") {
+                            ForEach(1...10, id: \.self) { num in
+                                Button(action: { settings.targetPomos = num }) {
+                                    HStack {
+                                        Text("\(num)")
+                                        if settings.targetPomos == num {
+                                            Spacer()
+                                            Image(systemName: "checkmark")
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        Divider()
+                        Button("Quit Pomo") {
+                            NSApplication.shared.terminate(nil)
+                        }
+                    } label: {
+                        Image(systemName: "gearshape.fill")
+                            .font(.system(size: 16))
+                    }
+                    .tint(Theme.darkBlue)
+                    .menuStyle(BorderlessButtonMenuStyle())
+                    .opacity(isHovering ? 1 : 0)
+                    .animation(.easeInOut(duration: 0.2), value: isHovering)
                 }
                 .padding(.leading, 8)
                 .padding(.trailing, 10)
-                .padding(.top, 8)
+                .padding(.top, 8) // Fine-tuned vertical alignment
                 Spacer()
             }
         }
@@ -157,7 +261,7 @@ struct MainView: View {
         HStack(spacing: 8) {
             // Close button
             Button(action: {
-                NSApp.keyWindow?.close()
+                NSApp.sendAction(#selector(AppDelegate.toggleWindow), to: nil, from: nil)
             }) {
                 Image(systemName: "xmark")
                     .font(.system(size: 8, weight: .bold))
@@ -185,21 +289,6 @@ struct MainView: View {
         }
     }
 
-    var settingsButton: some View {
-        Button(action: {
-            NSApp.sendAction(#selector(AppDelegate.openSettings), to: nil, from: nil)
-        }) {
-            Image(systemName: "gearshape.fill")
-                .renderingMode(.original)
-                .font(.system(size: 16))
-                .foregroundColor(Theme.darkBlue)
-                .frame(width: 20, height: 20)
-        }
-        .buttonStyle(PlainButtonStyle())
-        .opacity(isHovering ? 1 : 0)
-        .animation(.easeInOut(duration: 0.2), value: isHovering)
-    }
-
     func toggleCompactMode() {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
             isCompactMode.toggle()
@@ -223,6 +312,25 @@ struct MainView: View {
             )
 
             window.setFrame(newFrame, display: true, animate: true)
+        }
+    }
+
+    func updateFocusDuration(_ newDuration: TimeInterval) {
+        settings.focusDuration = newDuration
+        // If currently in focus phase, update the timer immediately
+        if timerManager.phase == .focus {
+            timerManager.resetPhase()
+        } else if timerManager.phase == .idle {
+            // Update idle display as well
+            timerManager.resetPhase()
+        }
+    }
+
+    func updateBreakDuration(_ newDuration: TimeInterval) {
+        settings.breakDuration = newDuration
+        // If currently in break phase, update the timer immediately
+        if timerManager.phase == .shortBreak {
+            timerManager.resetPhase()
         }
     }
     

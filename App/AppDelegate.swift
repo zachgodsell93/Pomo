@@ -49,6 +49,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         window.isOpaque = false
         window.hasShadow = true
 
+        window.titlebarAppearsTransparent = true
+
+        window.titleVisibility = .hidden
+
+        window.isMovableByWindowBackground = true
+
+        
+
         window.contentView = NSHostingView(rootView: contentView)
         window.makeKeyAndOrderFront(nil)
         window.title = "Pomo"
@@ -126,9 +134,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         image.lockFocus()
         
         // Draw Background
-        // Use deep blue from Theme (#03045e). Converting roughly to NSColor.
-        // Theme.darkBlue is #03045e -> R:3/255, G:4/255, B:94/255
-        let bgColor = NSColor(srgbRed: 3/255, green: 4/255, blue: 94/255, alpha: 1.0)
+        // Use light blue from Theme (#00b4d8). Converting to NSColor.
+        // Theme.lightBlue is #00b4d8 -> R:0/255, G:180/255, B:216/255
+        let bgColor = NSColor(srgbRed: 0/255, green: 180/255, blue: 216/255, alpha: 1.0)
         let bgPath = NSBezierPath(roundedRect: NSRect(origin: .zero, size: imageSize), xRadius: 4, yRadius: 4)
         bgColor.setFill()
         bgPath.fill()
