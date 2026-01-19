@@ -80,6 +80,8 @@ class SessionHistoryManager: ObservableObject {
 
     private init() {
         loadSessions()
+        // Uncomment to prefill sample data for screenshots:
+        prefillSampleData()
     }
 
     func addSession(duration: TimeInterval, type: SessionRecord.SessionType) {
@@ -90,6 +92,48 @@ class SessionHistoryManager: ObservableObject {
 
     func clearHistory() {
         sessions.removeAll()
+        saveSessions()
+    }
+
+    // MARK: - Sample Data for Screenshots
+
+    func prefillSampleData() {
+        let calendar = Calendar.current
+        let now = Date()
+
+        // Clear existing data first
+        sessions.removeAll()
+
+        // Create sessions over the past 14 days with varying patterns
+        let sessionPatterns: [(daysAgo: Int, sessionCount: Int, durations: [TimeInterval])] = [
+            (0, 3, [25 * 60, 25 * 60, 25 * 60]),           // Today: 3 sessions
+            (1, 4, [25 * 60, 25 * 60, 30 * 60, 25 * 60]), // Yesterday: 4 sessions
+            (2, 2, [25 * 60, 45 * 60]),                    // 2 days ago: 2 sessions
+            (3, 5, [25 * 60, 25 * 60, 25 * 60, 25 * 60, 30 * 60]), // 3 days ago: 5 sessions
+            (4, 3, [25 * 60, 25 * 60, 50 * 60]),          // 4 days ago: 3 sessions
+            (5, 4, [25 * 60, 25 * 60, 25 * 60, 25 * 60]), // 5 days ago: 4 sessions
+            (6, 2, [25 * 60, 25 * 60]),                    // 6 days ago: 2 sessions
+            (8, 3, [25 * 60, 30 * 60, 25 * 60]),          // 8 days ago: 3 sessions (gap for variety)
+            (9, 4, [25 * 60, 25 * 60, 25 * 60, 45 * 60]), // 9 days ago: 4 sessions
+            (10, 2, [25 * 60, 25 * 60]),                   // 10 days ago: 2 sessions
+            (12, 3, [25 * 60, 25 * 60, 30 * 60]),         // 12 days ago: 3 sessions
+            (13, 1, [25 * 60]),                            // 13 days ago: 1 session
+        ]
+
+        for pattern in sessionPatterns {
+            guard let dayDate = calendar.date(byAdding: .day, value: -pattern.daysAgo, to: now) else { continue }
+            let dayStart = calendar.startOfDay(for: dayDate)
+
+            for (index, duration) in pattern.durations.enumerated() {
+                // Spread sessions throughout the day (9am, 11am, 2pm, 4pm, 6pm)
+                let hoursFromStart = [9, 11, 14, 16, 18][index % 5]
+                guard let sessionDate = calendar.date(byAdding: .hour, value: hoursFromStart, to: dayStart) else { continue }
+
+                let record = SessionRecord(date: sessionDate, duration: duration, type: .focus)
+                sessions.append(record)
+            }
+        }
+
         saveSessions()
     }
 
